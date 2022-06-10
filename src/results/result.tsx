@@ -1,8 +1,9 @@
 import React from "react";
+import { IUser } from "../types/github";
 
 type ResultVariant = "repo" | "user";
 
-interface IResultProps {
+interface IResultProps extends IUser {
   variant: ResultVariant;
 }
 
