@@ -22,7 +22,7 @@ export const GET_REPOSITORIES = gql`
           }
         }
       }
-      userCount
+      repositoryCount
     }
   }
 `;

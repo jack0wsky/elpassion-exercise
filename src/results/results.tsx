@@ -40,22 +40,26 @@ export const Results = () => {
   }, [searchPhrase]);
 
   useEffect(() => {
-    if (!users) return;
+    if (!users || !repositories) return;
 
-    console.log(totalUsers, totalRepositories);
-
-    // setTotalResults(totalUsers + totalRepositories);
-    setResults([
-      ...users.map((user: any) => ({ ...user, variant: "user" })),
-      ...repositories.map((repo: any) => ({ ...repo, variant: "repo" })),
-    ]);
+    setTotalResults(totalUsers + totalRepositories);
+    setResults(
+      [
+        ...users.map((user: any) => ({ ...user, variant: "user" })),
+        ...repositories.map((repo: any) => ({ ...repo, variant: "repo" })),
+      ].sort()
+    );
   }, [users]);
 
   return (
     <section className="w-full px-[140px] mx-auto flex flex-col">
-      <div>{totalResults} Results</div>
+      {totalResults > 0 && (
+        <div className="mt-[34px] mb-[20px]">
+          <p className="text-[21px]">{totalResults} results</p>
+        </div>
+      )}
 
-      <ul className="w-[80%] min-h-[200px] flex flex-col gap-20">
+      <ul className="w-[80%] min-h-[200px] flex flex-col">
         {results.map((result) => (
           <Result key={result.id} {...result} />
         ))}
