@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Result } from "./result";
-import { IUser } from "../types/github";
-import { GithubAPI } from "../clients/github-client";
+import { IRepository, IUser } from "../types/github";
 import { useSearch } from "../store/slices/search-slice";
+import { useGithubUsers } from "../hooks/use-github-users";
+import { useGithubRepositories } from "../hooks/use-github-repositories";
 
 let timer: any;
 
 export const Results = () => {
   const { searchPhrase } = useSearch();
-  const [results, setResults] = useState<IUser[]>([]);
+  const [results, setResults] = useState<(IUser | IRepository)[]>([]);
   const [totalResults, setTotalResults] = useState(0);
+
+  const { users, totalUsers, fetchUsers } = useGithubUsers(searchPhrase);
+  const { repositories, totalRepositories, fetchRepositories } =
+    useGithubRepositories(searchPhrase);
 
   const debounce = (callback: () => void, timeout: number) => {
     clearTimeout(timer);
@@ -20,26 +25,31 @@ export const Results = () => {
   };
 
   useEffect(() => {
-    /*
     if (searchPhrase === "") {
       setResults([]);
+
+      setTotalResults(0);
 
       return;
     }
 
-     */
+    debounce(async () => {
+      await fetchUsers();
+      await fetchRepositories();
+    }, 1000);
+  }, [searchPhrase]);
 
-    const getResults = async () => {
-      const response = await GithubAPI.get(`/search/users?q=${searchPhrase}`);
-      console.log(response.data);
+  useEffect(() => {
+    if (!users) return;
 
-      setResults(response.data.items);
+    console.log(totalUsers, totalRepositories);
 
-      setTotalResults(response.data.total_count);
-    };
-
-    debounce(() => getResults(), 1000);
-  }, []);
+    // setTotalResults(totalUsers + totalRepositories);
+    setResults([
+      ...users.map((user: any) => ({ ...user, variant: "user" })),
+      ...repositories.map((repo: any) => ({ ...repo, variant: "repo" })),
+    ]);
+  }, [users]);
 
   return (
     <section className="w-full px-[140px] mx-auto flex flex-col">
@@ -47,7 +57,7 @@ export const Results = () => {
 
       <ul className="w-[80%] min-h-[200px] flex flex-col gap-20">
         {results.map((result) => (
-          <Result key={result.id} variant="user" {...result} />
+          <Result key={result.id} {...result} />
         ))}
       </ul>
     </section>
