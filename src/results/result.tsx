@@ -1,7 +1,9 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { IUser, IRepository } from "../types/github";
 import { BookIcon } from "../components/shared/icons/book-icon";
 import { StarIcon } from "../components/shared/icons/star";
+import { formatDistanceToNowStrict } from "date-fns";
 
 interface IUserResultProps extends IUser {
   variant: "user";
@@ -22,7 +24,9 @@ export const Result = (props: IUserResultProps | IRepoResultProps) => {
         </div>
 
         <div className="flex flex-col ml-[8px]">
-          <p className="text-primary font-medium">{name}</p>
+          <Link to={`/${login}`} className="text-primary font-medium">
+            {name}
+          </Link>
           <p className="text-gray-500">{login}</p>
 
           <p className="mt-[20px] mb-[8px]">{bio}</p>
@@ -43,8 +47,8 @@ export const Result = (props: IUserResultProps | IRepoResultProps) => {
   } = props;
   return (
     <li className="pt-[20px] pb-[16px] flex items-start relative">
-      <span className="absolute w-full h-[1px] bg-grey-200 top-0" />
-      <div className="w-[35px] h-[35px] flex justify-center items-center">
+      <span className="absolute w-full h-[1px] bg-grey-100 top-0" />
+      <div className="w-[35px] h-[24px] flex justify-center items-center">
         <BookIcon />
       </div>
 
@@ -55,16 +59,26 @@ export const Result = (props: IUserResultProps | IRepoResultProps) => {
 
         <div className="flex gap-[10px] items-center">
           <div className="flex items-center">
-            <StarIcon /> <p className="text-[12px]">{stargazers.totalCount}</p>
+            <StarIcon />{" "}
+            <p className="text-[12px] ml-[4px] text-grey-200">
+              {stargazers.totalCount}
+            </p>
           </div>
 
           {languages.nodes.map((language) => (
-            <p className="text-[12px]">{language.name}</p>
+            <div className="text-[12px] flex items-center">
+              <div className="w-[12px] h-[12px] rounded-full bg-primary mr-[3px]" />
+              <span className="text-grey-200">{language.name}</span>
+            </div>
           ))}
 
-          {licenseInfo && <p className="text-[12px]">{licenseInfo.name}</p>}
+          {licenseInfo && (
+            <p className="text-[12px] text-grey-200">{licenseInfo.name}</p>
+          )}
 
-          <p className="text-[12px]">Updated {updatedAt}</p>
+          <p className="text-[12px] text-grey-200">
+            Updated {formatDistanceToNowStrict(new Date(updatedAt))}
+          </p>
         </div>
       </div>
     </li>

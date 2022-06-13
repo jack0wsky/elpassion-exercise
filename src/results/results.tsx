@@ -10,7 +10,7 @@ let timer: any;
 export const Results = () => {
   const { searchPhrase } = useSearch();
   const [results, setResults] = useState<(IUser | IRepository)[]>([]);
-  const [totalResults, setTotalResults] = useState(0);
+  const [totalResults, setTotalResults] = useState("");
 
   const { users, totalUsers, fetchUsers } = useGithubUsers(searchPhrase);
   const { repositories, totalRepositories, fetchRepositories } =
@@ -28,7 +28,7 @@ export const Results = () => {
     if (searchPhrase === "") {
       setResults([]);
 
-      setTotalResults(0);
+      setTotalResults("0");
 
       return;
     }
@@ -40,9 +40,16 @@ export const Results = () => {
   }, [searchPhrase]);
 
   useEffect(() => {
+    fetchUsers();
+    fetchRepositories();
+  }, []);
+
+  useEffect(() => {
     if (!users || !repositories) return;
 
-    setTotalResults(totalUsers + totalRepositories);
+    const numberFormat = new Intl.NumberFormat("en-US");
+
+    setTotalResults(numberFormat.format(totalUsers + totalRepositories));
     setResults(
       [
         ...users.map((user: any) => ({ ...user, variant: "user" })),
@@ -52,9 +59,9 @@ export const Results = () => {
   }, [users]);
 
   return (
-    <section className="w-full px-[140px] mx-auto flex flex-col">
-      {totalResults > 0 && (
-        <div className="mt-[34px] mb-[20px]">
+    <section className="w-full px-[140px] mx-auto flex flex-col items-center">
+      {totalResults !== "" && (
+        <div className="mt-[34px] mb-[20px] w-[80%]">
           <p className="text-[21px]">{totalResults} results</p>
         </div>
       )}
