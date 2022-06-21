@@ -65,7 +65,10 @@ export const User = () => {
     metadata;
 
   return (
-    <Layout title={`${name} | Github Issues`}>
+    <Layout
+      title={`${name} | Github Issues`}
+      description={`Details page for ${name} account`}
+    >
       <section className="flex flex-col items-center">
         <div className="w-[296px] h-[296px] mt-[45px] rounded-full flex justify-center items-center overflow-hidden">
           <img

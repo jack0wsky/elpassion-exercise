@@ -4,13 +4,18 @@ import { Helmet } from "react-helmet";
 
 interface ILayoutProps {
   title: string;
+  description: string;
   children: ReactElement | ReactElement[];
 }
 
-export const Layout = ({ title, children }: ILayoutProps) => (
+export const Layout = ({ title, children, description }: ILayoutProps) => (
   <main>
     <Helmet>
       <title>{title}</title>
+      <meta name="description" content={description} />
+
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={title} />
     </Helmet>
     <Header />
     {children}
