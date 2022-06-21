@@ -1,8 +1,8 @@
 import { gql } from "graphql-request";
 
 export const GET_REPOSITORIES = gql`
-  query {
-    search(first: 9, query: "env", type: REPOSITORY) {
+  query GetRepositories($first: Int!, $query: String!) {
+    search(first: $first, query: $query, type: REPOSITORY) {
       nodes {
         ... on Repository {
           id
@@ -23,6 +23,11 @@ export const GET_REPOSITORIES = gql`
         }
       }
       repositoryCount
+      pageInfo {
+        startCursor
+        hasNextPage
+        endCursor
+      }
     }
   }
 `;

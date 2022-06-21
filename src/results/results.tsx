@@ -11,10 +11,48 @@ export const Results = () => {
   const { searchPhrase } = useSearch();
   const [results, setResults] = useState<(IUser | IRepository)[]>([]);
   const [totalResults, setTotalResults] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [lastItems, setLastItems] = useState<{
+    repo: string | null;
+    user: string | null;
+  }>({ repo: null, user: null });
 
-  const { users, totalUsers, fetchUsers } = useGithubUsers(searchPhrase);
-  const { repositories, totalRepositories, fetchRepositories } =
+  const [firstItems, setFirstItems] = useState<{
+    repo: string | null;
+    user: string | null;
+  }>({ repo: null, user: null });
+
+  const { users, totalUsers, fetchUsers, lastItem, firstItem } = useGithubUsers(
+    searchPhrase,
+    lastItems.user,
+    firstItems.user
+  );
+
+  const { repositories, totalRepositories, fetchRepositories, lastRepo } =
     useGithubRepositories(searchPhrase);
+
+  useEffect(() => {
+    if (!lastItem && !lastRepo) return;
+
+    setLastItems({ repo: lastRepo, user: lastItem });
+
+    setFirstItems({ ...firstItems, user: firstItem });
+  }, [lastItem, lastRepo, users]);
+
+  const fetchResults = async () => {
+    try {
+      setLoading(true);
+
+      await fetchUsers();
+      await fetchRepositories();
+
+      setLoading(false);
+    } catch (error) {
+      alert("Cannot fetch data. Please refresh page and try again");
+      setLoading(false);
+    }
+  };
 
   const debounce = (callback: () => void, timeout: number) => {
     clearTimeout(timer);
@@ -25,24 +63,12 @@ export const Results = () => {
   };
 
   useEffect(() => {
-    if (searchPhrase === "") {
-      setResults([]);
-
-      setTotalResults("0");
-
-      return;
-    }
-
-    debounce(async () => {
-      await fetchUsers();
-      await fetchRepositories();
-    }, 1000);
+    debounce(async () => fetchResults(), 1000);
   }, [searchPhrase]);
 
   useEffect(() => {
-    fetchUsers();
-    fetchRepositories();
-  }, []);
+    fetchResults();
+  }, [page]);
 
   useEffect(() => {
     if (!users || !repositories) return;
@@ -58,6 +84,8 @@ export const Results = () => {
     );
   }, [users]);
 
+  if (loading && results.length === 0) return <p>Loading...</p>;
+
   return (
     <section className="w-full px-[140px] mx-auto flex flex-col items-center">
       {totalResults !== "" && (
@@ -67,10 +95,25 @@ export const Results = () => {
       )}
 
       <ul className="w-[80%] min-h-[200px] flex flex-col">
-        {results.map((result) => (
-          <Result key={result.id} {...result} />
-        ))}
+        {results.map((result) => {
+          if (!result.id) return null;
+
+          return <Result key={result.id} {...result} />;
+        })}
       </ul>
+
+      <div className="flex justify-between mt-[58px] mb-[73px] w-[200px]">
+        <button
+          className="disabled:text-grey-200"
+          disabled={page === 1}
+          onClick={() => setPage((prevState) => prevState - 1)}
+        >
+          Previous
+        </button>
+        <button onClick={() => setPage((prevState) => prevState + 1)}>
+          Next
+        </button>
+      </div>
     </section>
   );
 };
