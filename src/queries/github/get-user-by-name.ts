@@ -1,7 +1,7 @@
 import { gql } from "graphql-request";
 
-export const GET_USER_BY_NAME = gql`
-  query GetUserByName($login: String!) {
+export const GET_USER_BY_LOGIN = gql`
+  query GetUserByLogin($login: String!) {
     user(login: $login) {
       name
       avatarUrl
