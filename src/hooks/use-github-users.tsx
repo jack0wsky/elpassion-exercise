@@ -1,5 +1,6 @@
 import { useQuery } from "react-query";
 import { GET_USERS } from "../queries/github/get-users";
+import { GET_USER_BY_NAME } from "../queries/github/get-user-by-name";
 import { fetchQuery } from "../clients/react-query-client";
 
 export const useGithubUsers = (
@@ -14,7 +15,7 @@ export const useGithubUsers = (
       searchPhrase,
       first: PER_PAGE,
       after: lastItem || null,
-      before: firstItem || null
+      before: firstItem || null,
     });
 
     return {
@@ -25,11 +26,22 @@ export const useGithubUsers = (
     };
   });
 
+  const { data: userData, refetch: fetchUser } = useQuery(
+    "user",
+    async (login) => {
+      return await fetchQuery(GET_USER_BY_NAME, {
+        login,
+      });
+    }
+  );
+
   return {
+    userData,
     users: data?.users,
     totalUsers: data?.totalCount,
     lastItem: data?.lastItem,
     firstItem: data?.firstItem,
+    fetchUser,
     fetchUsers: refetch,
   };
 };
