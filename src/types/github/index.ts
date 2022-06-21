@@ -1,3 +1,7 @@
+interface ICount {
+  totalCount: number;
+}
+
 export interface IUser {
   id: string;
   bio: string;
@@ -5,7 +9,10 @@ export interface IUser {
   location: string;
   login: string;
   name: string;
-  variant: 'user';
+  starredRepositories: ICount;
+  followers: ICount;
+  following: ICount;
+  variant: "user";
 }
 
 export interface IRepository {
@@ -22,5 +29,5 @@ export interface IRepository {
   languages: {
     nodes: { name: string }[];
   };
-  variant: 'repo';
+  variant: "repo";
 }

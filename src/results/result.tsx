@@ -24,7 +24,7 @@ export const Result = (props: IUserResultProps | IRepoResultProps) => {
         </div>
 
         <div className="flex flex-col ml-[8px]">
-          <Link to={`/${login}`} className="text-primary font-medium">
+          <Link to={`/user/${login}`} className="text-primary font-medium">
             {name}
           </Link>
           <p className="text-gray-500">{login}</p>
