@@ -4,10 +4,12 @@ import { request } from "graphql-request";
 import { IUser } from "../types/github";
 import { useParams } from "react-router";
 import { Layout } from "../components/shared/layout";
-import { GET_USER_BY_NAME } from "../queries/github/get-user-by-name";
+import { GET_USER_BY_LOGIN } from "../queries/github/get-user-by-name";
+import { ENDPOINT, HEADER } from "../clients/react-query-client";
 import { StarIcon } from "../components/shared/icons/star";
 import { FollowersIcon } from "../components/shared/icons/followers-icon";
 import { EmptyState } from "../components/user/empty-state";
+import { LoadingSpinner } from "../components/shared/loading-spinner";
 
 export const User = () => {
   const [metadata, setMetadata] = useState<IUser | null>(null);
@@ -19,20 +21,20 @@ export const User = () => {
     resetData();
   }, []);
 
+  const getUserByLogin = async () => {
+    return await request(
+      ENDPOINT,
+      GET_USER_BY_LOGIN,
+      {
+        login: user,
+      },
+      HEADER
+    );
+  };
+
   const { data, isLoading, refetch } = useQuery(
     "user",
-    async () => {
-      return await request(
-        "https://api.github.com/graphql",
-        GET_USER_BY_NAME,
-        {
-          login: user,
-        },
-        {
-          Authorization: `token ${process.env.REACT_APP_GITHUB_ACCESS_TOKEN}`,
-        }
-      );
-    },
+    async () => getUserByLogin(),
     { enabled: !!user }
   );
 
@@ -48,7 +50,12 @@ export const User = () => {
     setMetadata(data.user);
   }, [isLoading, data]);
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading)
+    return (
+      <div className="w-full h-[100vh] flex justify-center items-center">
+        <LoadingSpinner />
+      </div>
+    );
 
   if (!isLoading && !data && !metadata) return <EmptyState />;
 

@@ -15,9 +15,13 @@ export const GET_REPOSITORIES = gql`
           stargazers {
             totalCount
           }
+          issues {
+            totalCount
+          }
           languages(first: 1) {
             nodes {
               name
+              color
             }
           }
         }

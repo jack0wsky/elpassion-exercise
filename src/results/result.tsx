@@ -23,7 +23,7 @@ export const Result = (props: IUserResultProps | IRepoResultProps) => {
           <img src={avatarUrl} alt={login} />
         </div>
 
-        <div className="flex flex-col ml-[8px]">
+        <div className="flex flex-col ml-[8px] w-[300px] md:w-auto">
           <Link to={`/user/${login}`} className="text-primary font-medium">
             {name}
           </Link>
@@ -44,6 +44,7 @@ export const Result = (props: IUserResultProps | IRepoResultProps) => {
     stargazers,
     languages,
     description,
+    issues,
   } = props;
   return (
     <li className="pt-[20px] pb-[16px] flex items-start relative">
@@ -57,29 +58,37 @@ export const Result = (props: IUserResultProps | IRepoResultProps) => {
 
         <p className="mt-[5px] mb-[15px] text-grey-200">{description}</p>
 
-        <div className="flex gap-[10px] items-center">
-          <div className="flex items-center">
+        <ul className="flex flex-wrap gap-y-[2px] gap-x-[14px] items-center">
+          <li className="flex items-center">
             <StarIcon />{" "}
             <p className="text-[12px] ml-[4px] text-grey-200">
               {stargazers.totalCount}
             </p>
-          </div>
+          </li>
 
-          {languages.nodes.map((language) => (
-            <div className="text-[12px] flex items-center">
-              <div className="w-[12px] h-[12px] rounded-full bg-primary mr-[3px]" />
-              <span className="text-grey-200">{language.name}</span>
-            </div>
+          {languages.nodes.map(({ name, color }) => (
+            <li className="text-[12px] flex items-center">
+              <div
+                style={{ backgroundColor: color }}
+                className="w-[12px] h-[12px] rounded-full mr-[3px]"
+              />
+              <span className="text-grey-200">{name}</span>
+            </li>
           ))}
 
           {licenseInfo && (
-            <p className="text-[12px] text-grey-200">{licenseInfo.name}</p>
+            <li className="text-[12px] text-grey-200">{licenseInfo.name}</li>
           )}
 
-          <p className="text-[12px] text-grey-200">
+          <li className="text-[12px] text-grey-200">
             Updated {formatDistanceToNowStrict(new Date(updatedAt))}
-          </p>
-        </div>
+          </li>
+
+          <li className="text-[12px] text-grey-200">
+            {issues.totalCount} {issues.totalCount > 1 ? "issues" : "issue"}{" "}
+            need help
+          </li>
+        </ul>
       </div>
     </li>
   );

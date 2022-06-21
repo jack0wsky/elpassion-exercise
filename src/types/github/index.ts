@@ -15,6 +15,11 @@ export interface IUser {
   variant: "user";
 }
 
+interface ILanguage {
+  name: string;
+  color: string;
+}
+
 export interface IRepository {
   id: string;
   nameWithOwner: string;
@@ -23,11 +28,10 @@ export interface IRepository {
   licenseInfo: {
     name: string;
   };
-  stargazers: {
-    totalCount: number;
-  };
+  issues: ICount;
+  stargazers: ICount;
   languages: {
-    nodes: { name: string }[];
+    nodes: ILanguage[];
   };
   variant: "repo";
 }
