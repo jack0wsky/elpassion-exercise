@@ -6,6 +6,7 @@ import { useGithubUsers } from "../hooks/use-github-users";
 import { useGithubRepositories } from "../hooks/use-github-repositories";
 import { LoadingSpinner } from "../components/shared/loading-spinner";
 import { Pagination } from "../components/results/pagination";
+import { EmptyState } from "../components/results/empty-state";
 
 let timer: any;
 
@@ -112,18 +113,22 @@ export const Results = () => {
 
   return (
     <section className="w-full px-[16px] md:px-[140px] mx-auto flex flex-col items-center">
-      {totalResults !== "" && (
+      {parseFloat(totalResults) > 0 && (
         <div className="mt-[34px] mb-[20px] w-full md:w-[80%]">
           <p className="text-[21px]">{totalResults} results</p>
         </div>
       )}
 
       <ul className="w-full md:w-[80%] mb-[58px] min-h-[200px] flex flex-col">
-        {results.map((result) => {
-          if (!result.id) return null;
+        {parseFloat(totalResults) > 0 ? (
+          results.map((result) => {
+            if (!result.id) return null;
 
-          return <Result key={result.id} {...result} />;
-        })}
+            return <Result key={result.id} {...result} />;
+          })
+        ) : (
+          <EmptyState />
+        )}
       </ul>
 
       {searchPhrase === "" && (
