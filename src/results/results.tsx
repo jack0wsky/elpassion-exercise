@@ -92,12 +92,23 @@ export const Results = () => {
     ]);
   }, [users]);
 
-  if (loading && results.length === 0)
+  if (loading && results.length === 0) {
     return (
       <div className="w-full h-[100vh] flex justify-center items-center">
         <LoadingSpinner />
       </div>
     );
+  }
+
+  const navigateToPreviousPage = () => {
+    setLastItems({ repo: null, user: null });
+    setPage((prevState) => prevState - 1);
+  };
+
+  const navigateToNextPage = () => {
+    setFirstItems({ repo: null, user: null });
+    setPage((prevState) => prevState + 1);
+  };
 
   return (
     <section className="w-full px-[16px] md:px-[140px] mx-auto flex flex-col items-center">
@@ -118,8 +129,8 @@ export const Results = () => {
       {searchPhrase === "" && (
         <Pagination
           currentPage={page}
-          onPreviousPage={() => setPage((prevState) => prevState - 1)}
-          onNextPage={() => setPage((prevState) => prevState + 1)}
+          onPrevious={navigateToPreviousPage}
+          onNext={navigateToNextPage}
         />
       )}
     </section>
