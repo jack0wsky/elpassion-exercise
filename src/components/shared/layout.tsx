@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import { Header } from "./header";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 interface ILayoutProps {
   title: string;

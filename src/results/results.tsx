@@ -5,8 +5,14 @@ import { useSearch } from "../store/slices/search-slice";
 import { useGithubUsers } from "../hooks/use-github-users";
 import { useGithubRepositories } from "../hooks/use-github-repositories";
 import { LoadingSpinner } from "../components/shared/loading-spinner";
+import { Pagination } from "../components/results/pagination";
 
 let timer: any;
+
+interface IResult {
+  repo: string | null;
+  user: string | null;
+}
 
 export const Results = () => {
   const { searchPhrase } = useSearch();
@@ -14,15 +20,15 @@ export const Results = () => {
   const [totalResults, setTotalResults] = useState("");
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [lastItems, setLastItems] = useState<{
-    repo: string | null;
-    user: string | null;
-  }>({ repo: null, user: null });
+  const [lastItems, setLastItems] = useState<IResult>({
+    repo: null,
+    user: null,
+  });
 
-  const [firstItems, setFirstItems] = useState<{
-    repo: string | null;
-    user: string | null;
-  }>({ repo: null, user: null });
+  const [firstItems, setFirstItems] = useState<IResult>({
+    repo: null,
+    user: null,
+  });
 
   const { users, totalUsers, fetchUsers, lastItem, firstItem } = useGithubUsers(
     searchPhrase,
@@ -101,7 +107,7 @@ export const Results = () => {
         </div>
       )}
 
-      <ul className="w-full md:w-[80%] min-h-[200px] flex flex-col">
+      <ul className="w-full md:w-[80%] mb-[58px] min-h-[200px] flex flex-col">
         {results.map((result) => {
           if (!result.id) return null;
 
@@ -109,18 +115,13 @@ export const Results = () => {
         })}
       </ul>
 
-      <div className="flex justify-between mt-[58px] mb-[73px] w-[200px]">
-        <button
-          className="disabled:text-grey-200"
-          disabled={page === 1}
-          onClick={() => setPage((prevState) => prevState - 1)}
-        >
-          Previous
-        </button>
-        <button onClick={() => setPage((prevState) => prevState + 1)}>
-          Next
-        </button>
-      </div>
+      {searchPhrase === "" && (
+        <Pagination
+          currentPage={page}
+          onPreviousPage={() => setPage((prevState) => prevState - 1)}
+          onNextPage={() => setPage((prevState) => prevState + 1)}
+        />
+      )}
     </section>
   );
 };
